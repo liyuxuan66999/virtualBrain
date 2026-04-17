@@ -1,0 +1,5 @@
+fastapi==0.136.0
+uvicorn==0.35.0
+pydantic==2.13.2
+email-validator==2.3.0
+python-dotenv==1.2.2
