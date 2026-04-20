@@ -7,7 +7,7 @@ const { CLIENT_ERRORS, SERVER_ERRORS } = require('./httpResponseTemplates/errorT
 const app = express();
 const port = process.env.PORT || 5000;
 const AUTH_SERVICE_BASE_URL =
-  process.env.AUTH_SERVICE_BASE_URL || "http://127.0.0.1:8000";
+    process.env.AUTH_SERVICE_BASE_URL || "http://127.0.0.1:8000";
 
 app.use(express.json({ limit: "1mb" }));
 
@@ -44,13 +44,20 @@ app.post('/auth/login', async (req, res) => {
         });
     } catch (error) {
         const statusCode = error.response?.status;
+        const errorDetail = error.response?.data?.detail;
+
+        if (statusCode === 403) {
+            return res.status(403).json({
+                error: errorDetail ?? "User account is not active",
+            });
+        }
+
         if (statusCode === 422 || statusCode === 401) {
             return res.status(400).json({
                 error: CLIENT_ERRORS.INVALID_LOGIN,
             });
         }
         console.error("Login proxy failed:", error);
-        
         return res.status(502).json({
             error: SERVER_ERRORS.AUTH_SERVICE_ERROR,
         });
