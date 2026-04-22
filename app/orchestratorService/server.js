@@ -1,8 +1,10 @@
 const express = require('express');
 const axios = require("axios");
-require("dotenv").config();
+const path = require("path");
+require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const { CLIENT_ERRORS, SERVER_ERRORS } = require('./httpResponseTemplates/errorTemplates');
+const verifyAccessToken = require("./utils/authService/verifyAccessToken");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -62,7 +64,34 @@ app.post('/auth/login', async (req, res) => {
             error: SERVER_ERRORS.AUTH_SERVICE_ERROR,
         });
     }
-})
+});
+
+app.post('/auth/refresh', async (req, res) => {
+    try {
+        const response = await axios.post(
+            `${AUTH_SERVICE_BASE_URL}/refresh`,
+            req.body,
+            { timeout: 300000 }
+        );
+
+        return res.status(200).json({
+            source: "orchestrator",
+            data: response.data ?? null,
+        });
+    } catch (error) {
+        return res.status(error.response?.status || 502).json({
+            error: error.response?.data?.detail || "Failed to refresh token",
+        });
+    }
+});
+
+app.post('/user/ingest', verifyAccessToken, async (req, res) => {
+    return res.status(200).json({
+        message: "Token verified. User ingest can continue.",
+        user: req.user,
+        payload: req.body ?? null,
+    });
+});
 
 app.listen(port, () => {
     console.log(`Orchestrator service running on port ${port}`);

@@ -6,8 +6,8 @@ Minimal V1 backend scaffold for the Virtual Brain project.
 
 - `POST /auth/register`
 - `POST /auth/login`
-- `GET /auth/me`
-- `GET /health`
+- `POST /user/ingest`
+- `POST/user/query`
 
 ## Stack
 
