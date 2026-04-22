@@ -1,1 +1,1 @@
-from .httpRequestModels import LoginRequest
+from .httpRequestModels import LoginRequest, RefreshTokenRequest
