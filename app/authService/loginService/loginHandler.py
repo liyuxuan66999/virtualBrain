@@ -1,12 +1,21 @@
 from fastapi import HTTPException, status
 
-from database import find_user_by_email, update_last_login
+from database import (
+    find_user_by_email,
+    update_last_login,
+    create_refresh_token_record,
+)
 from httpResponseTemplates.error_templates import (
     ACCOUNT_STATUS_ERROR,
     INVALID_EMAIL_OR_PASSWORD,
 )
 from models import LoginRequest
-from utils import create_access_token, create_refresh_token, verify_password
+from utils import (
+    create_access_token,
+    create_refresh_token,
+    verify_password,
+    hash_token,
+)
 
 
 async def login(payload: LoginRequest) -> dict:
@@ -30,9 +39,16 @@ async def login(payload: LoginRequest) -> dict:
         user_id=str(user["id"]),
         email=user["email"],
     )
-    refresh_token = create_refresh_token(
+    refresh_token, refresh_jti, refresh_expires_at = create_refresh_token(
         user_id=str(user["id"]),
         email=user["email"],
+    )
+
+    create_refresh_token_record(
+        user_id=str(user["id"]),
+        jti=refresh_jti,
+        token_hash=hash_token(refresh_token),
+        expires_at=refresh_expires_at,
     )
 
     return {

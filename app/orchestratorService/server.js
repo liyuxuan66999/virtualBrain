@@ -85,6 +85,25 @@ app.post('/auth/refresh', async (req, res) => {
     }
 });
 
+app.post('/auth/logout', async (req, res) => {
+    try {
+        const response = await axios.post(
+            `${AUTH_SERVICE_BASE_URL}/logout`,
+            req.body,
+            { timeout: 300000 }
+        );
+
+        return res.status(200).json({
+            source: "orchestrator",
+            data: response.data ?? null,
+        });
+    } catch (error) {
+        return res.status(error.response?.status || 502).json({
+            error: error.response?.data?.detail || "Failed to logout",
+        });
+    }
+});
+
 app.post('/user/ingest', verifyAccessToken, async (req, res) => {
     return res.status(200).json({
         message: "Token verified. User ingest can continue.",
