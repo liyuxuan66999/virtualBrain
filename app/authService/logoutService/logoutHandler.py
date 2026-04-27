@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 import jwt
 
 from config import JWT_ALGORITHM, JWT_SECRET
-from database import find_active_refresh_token_by_jti, revoke_refresh_token_by_jti
+from database import find_refresh_token_by_jti, revoke_refresh_token_by_jti
 from httpResponseTemplates.error_templates import TOKEN_ERROR
 from models import LogoutRequest
 from utils import hash_token
@@ -33,7 +33,7 @@ async def logout(payload: LogoutRequest) -> dict:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=TOKEN_ERROR["invalid_token"],
         )
-    token_record = find_active_refresh_token_by_jti(refresh_jti)
+    token_record = find_refresh_token_by_jti(refresh_jti)
     if token_record is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

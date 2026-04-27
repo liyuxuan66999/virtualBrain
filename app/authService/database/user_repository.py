@@ -16,6 +16,20 @@ def find_user_by_email(email: str) -> dict[str, Any] | None:
             cur.execute(query, (email.lower(),))
             return cur.fetchone()
 
+def create_user(email: str, password_hash: str) -> dict[str, Any]:
+    query = """
+        INSERT INTO users (email, password_hash)
+        VALUES (%s, %s)
+        RETURNING id, email, status, email_verified, created_at
+    """
+
+    with get_db_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (email.lower(), password_hash))
+            user = cur.fetchone()
+        conn.commit()
+
+    return user
 
 def update_last_login(user_id: str) -> None:
     query = """

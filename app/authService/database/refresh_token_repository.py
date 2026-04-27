@@ -19,7 +19,7 @@ def create_refresh_token_record(
             cur.execute(query, (user_id, jti, token_hash, expires_at))
         conn.commit()
 
-def find_active_refresh_token_by_jti(jti: str) -> dict[str, Any] | None:
+def find_refresh_token_by_jti(jti: str) -> dict[str, Any] | None:
     query = """
         SELECT id, user_id, jti, token_hash, expires_at, revoked_at, last_used_at, created_at
         FROM refresh_tokens

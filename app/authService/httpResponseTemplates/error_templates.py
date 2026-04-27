@@ -1,4 +1,5 @@
 INVALID_EMAIL_OR_PASSWORD = "Invalid user email or password"
+EMAIL_ALREADY_REGISTERED = "Email is already registered"
 ACCOUNT_STATUS_ERROR = {
     "inactive": "User account is not active",
 }

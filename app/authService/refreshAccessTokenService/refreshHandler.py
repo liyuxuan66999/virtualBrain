@@ -6,7 +6,7 @@ import jwt
 from config import JWT_ALGORITHM, JWT_SECRET
 from database import (
     find_user_by_email,
-    find_active_refresh_token_by_jti,
+    find_refresh_token_by_jti,
     revoke_refresh_token_by_jti,
     touch_refresh_token,
     create_refresh_token_record,
@@ -55,7 +55,7 @@ async def refresh_access_token(payload: RefreshTokenRequest) -> dict:
             detail=TOKEN_ERROR["invalid_token"],
         )
 
-    token_record = find_active_refresh_token_by_jti(refresh_jti)
+    token_record = find_refresh_token_by_jti(refresh_jti)
     if token_record is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

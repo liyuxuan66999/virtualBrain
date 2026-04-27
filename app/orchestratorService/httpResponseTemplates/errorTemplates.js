@@ -1,5 +1,6 @@
 const CLIENT_ERRORS = {
-    INVALID_LOGIN: 'invalid email or password'
+    INVALID_EMAIL_OR_PW: 'invalid email or password',
+    EMAIL_ALREADY_REGISTERED: "Email is already registered"
 }
 
 const SERVER_ERRORS = {

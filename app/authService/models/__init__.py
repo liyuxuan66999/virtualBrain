@@ -1,8 +1,13 @@
-from .httpRequestModels import LoginRequest, RefreshTokenRequest, LogoutRequest
-
+from .httpRequestModels import (
+    LoginRequest,
+    RegisterRequest,
+    RefreshTokenRequest,
+    LogoutRequest,
+)
 # define the scope of: from models improt *
 __all__ = [
     "LoginRequest",
     "RefreshTokenRequest",
-    "LogoutRequest"
+    "LogoutRequest",
+    "RegisterRequest",
 ]
