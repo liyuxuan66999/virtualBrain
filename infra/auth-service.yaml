@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: VirtualBrain auth service Lambda deployed from an ECR container image.
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: Full ECR image URI, including tag or digest.
+  FunctionName:
+    Type: String
+    Default: virtualbrain-auth-service
+  JwtSecret:
+    Type: String
+    NoEcho: true
+    Default: dev-secret-only
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Default: sqlite:///./virtualbrain.db
+
+Resources:
+  AuthServiceExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${FunctionName}-execution-role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+
+  AuthServiceFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Ref FunctionName
+      PackageType: Image
+      Code:
+        ImageUri: !Ref ImageUri
+      Role: !GetAtt AuthServiceExecutionRole.Arn
+      Timeout: 30
+      MemorySize: 512
+      Environment:
+        Variables:
+          JWT_SECRET: !Ref JwtSecret
+          DATABASE_URL: !Ref DatabaseUrl
+
+  AuthServiceLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${AuthServiceFunction}"
+      RetentionInDays: 14
+
+Outputs:
+  FunctionName:
+    Value: !Ref AuthServiceFunction
+  FunctionArn:
+    Value: !GetAtt AuthServiceFunction.Arn
+  ExecutionRoleArn:
+    Value: !GetAtt AuthServiceExecutionRole.Arn

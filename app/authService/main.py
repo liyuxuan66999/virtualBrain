@@ -1,3 +1,5 @@
+from mangum import Mangum
+
 from fastapi import FastAPI
 from loginService.loginHandler import login as handle_login
 from logoutService.logoutHandler import logout as handle_logout
@@ -15,9 +17,9 @@ from registerService.registerHandler import register as handle_register
 app = FastAPI()
 
 
-@app.get("/")
-def root() -> dict[str, str]:
-    return {"hello": "world"}
+@app.get("/health")
+def health() -> dict[str, str]:
+    return {"status": "ok"}
 
 
 @app.post("/login")
@@ -36,3 +38,6 @@ async def refresh_access_token(payload: RefreshTokenRequest) -> dict:
 async def logout(payload: LogoutRequest) -> dict:
     print("logout")
     return await handle_logout(payload)
+
+
+handler = Mangum(app)
