@@ -1,6 +1,7 @@
 from mangum import Mangum
 
 from fastapi import FastAPI
+import logging
 from loginService.loginHandler import login as handle_login
 from logoutService.logoutHandler import logout as handle_logout
 from models import (
@@ -15,10 +16,14 @@ from refreshAccessTokenService.refreshHandler import (
 from registerService.registerHandler import register as handle_register
 
 app = FastAPI()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 @app.get("/health")
 def health() -> dict[str, str]:
+    logger.info("service is healthy")
+    logger.exception("test error")
     return {"status": "ok"}
 
 
@@ -40,4 +45,4 @@ async def logout(payload: LogoutRequest) -> dict:
     return await handle_logout(payload)
 
 
-handler = Mangum(app)
+handler = Mangum(app, api_gateway_base_path="/dev")

@@ -1,0 +1,11 @@
+{
+  "name": "virtualbrain-auth-service",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "docker buildx build --platform linux/amd64 --provenance=false --sbom=false -t 555146423685.dkr.ecr.us-east-1.amazonaws.com/virtualbrain-auth-service:latest --push .",
+    "deploy": "aws lambda update-function-code --function-name virtualbrain-auth-service --image-uri 555146423685.dkr.ecr.us-east-1.amazonaws.com/virtualbrain-auth-service:latest --region us-east-1 --profile tony-dev",
+    "verify": "aws lambda get-function --function-name virtualbrain-auth-service --region us-east-1 --profile tony-dev",
+    "release": "docker buildx build --platform linux/amd64 --provenance=false --sbom=false -t 555146423685.dkr.ecr.us-east-1.amazonaws.com/virtualbrain-auth-service:latest --push . && aws lambda update-function-code --function-name virtualbrain-auth-service --image-uri 555146423685.dkr.ecr.us-east-1.amazonaws.com/virtualbrain-auth-service:latest --region us-east-1 --profile tony-dev"
+  }
+}
