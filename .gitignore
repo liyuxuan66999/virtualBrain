@@ -21,6 +21,8 @@ env/
 # Local databases
 *.db
 *.sqlite3
+app/ingestService/localData/
+app/ingestService/localStorage/
 
 # Node.js
 node_modules/
