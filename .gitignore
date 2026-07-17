@@ -24,6 +24,9 @@ env/
 app/ingestService/localData/
 app/ingestService/localStorage/
 
+# Local testing KB docs
+app/ingestService/tonyKBDocs/
+
 # Node.js
 node_modules/
 npm-debug.log*
