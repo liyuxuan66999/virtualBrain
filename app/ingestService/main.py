@@ -1,10 +1,9 @@
-from pathlib import Path
-
 from fastapi import FastAPI, HTTPException
 
-from models.httpRequestModels import IngestRequest
-from models.httpResponseModels import IngestResponse
-from utils.commonUtils import default_doc_type
+from fileUpload.singleFileUploadHandler import single_file_upload
+from bulkUpload.bulkUploadHandler import bulk_upload
+from models.httpRequestModels import IngestRequest, UploadType
+from models.httpResponseModels import BulkUploadResponse, IngestResponse
 
 app = FastAPI()
 
@@ -14,35 +13,12 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/ingest", response_model=IngestResponse)
-def ingest(payload: IngestRequest) -> IngestResponse:
-    file_path = Path(payload.file_path).expanduser().resolve()
-
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="file not found")
-
-    if not file_path.is_file():
-        raise HTTPException(status_code=400, detail="path is not a file")
-
-    try:
-        content = file_path.read_text(encoding="utf-8")
-    except UnicodeDecodeError as error:
-        raise HTTPException(status_code=400, detail="file must be utf-8 text") from error
-
-    doc_type = payload.doc_type.strip() if payload.doc_type else default_doc_type(file_path.name)
+@app.post("/ingest", response_model=IngestResponse | BulkUploadResponse)
+def ingest(payload: IngestRequest) -> IngestResponse | BulkUploadResponse:
+    if payload.upload_type == UploadType.file_upload:
+        return single_file_upload(payload)
     
-    return IngestResponse(
-        filename=file_path.name,
-        docType=doc_type,
-        filePath=str(file_path),
-        fileSizeBytes=len(content.encode("utf-8")),
-        status="read",
-    )
+    if payload.upload_type == UploadType.bulk_upload:
+        return bulk_upload(payload)
 
-
-def main():
-    print("Hello from ingestservice!")
-
-
-if __name__ == "__main__":
-    main()
+    raise HTTPException(status_code=501, detail="bulk upload is not implemented")
