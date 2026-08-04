@@ -23,9 +23,13 @@ env/
 *.sqlite3
 app/ingestService/localData/
 app/ingestService/localStorage/
+app/ingestService/vector_db/
 
 # Local testing KB docs
 app/ingestService/tonyKBDocs/
+
+# Local screenshots / scratch assets
+app/ingestService/front_end.PNG
 
 # Node.js
 node_modules/
@@ -37,6 +41,7 @@ pnpm-debug.log*
 # Build / coverage / logs
 dist/
 build/
+.cargo-target/
 coverage/
 htmlcov/
 logs/

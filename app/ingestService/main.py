@@ -16,11 +16,11 @@ def health() -> dict[str, str]:
 
 
 @app.post("/ingest", response_model=IngestResponse | BulkUploadResponse)
-def ingest(payload: IngestRequest) -> IngestResponse | BulkUploadResponse:
+async def ingest(payload: IngestRequest) -> IngestResponse | BulkUploadResponse:
     if payload.upload_type == UploadType.file_upload:
         return single_file_upload(payload)
     
     if payload.upload_type == UploadType.bulk_upload:
-        return bulk_upload(payload)
+        return await bulk_upload(payload)
 
     raise HTTPException(status_code=501, detail="bulk upload is not implemented")

@@ -8,7 +8,7 @@ from models.httpResponseModels import BulkUploadResponse
 from utils.commonUtils import default_doc_type, read_utf8_directory, create_chunks, create_embeddings
 
 
-def bulk_upload(payload: IngestRequest) -> BulkUploadResponse:
+async def bulk_upload(payload: IngestRequest) -> BulkUploadResponse:
     folder_path = Path(payload.path).expanduser().resolve()
 
     if not folder_path.exists():
