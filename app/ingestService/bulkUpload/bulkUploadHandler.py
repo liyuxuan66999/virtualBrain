@@ -6,7 +6,7 @@ from langchain_openai import OpenAIEmbeddings
 from models.httpRequestModels import IngestRequest
 from models.httpResponseModels import BulkUploadResponse
 from utils.commonUtils import default_doc_type, read_utf8_directory, create_chunks, create_embeddings
-
+from utils.chunkingUtils import create_chunks_by_ai
 
 async def bulk_upload(payload: IngestRequest) -> BulkUploadResponse:
     folder_path = Path(payload.path).expanduser().resolve()
@@ -28,10 +28,11 @@ async def bulk_upload(payload: IngestRequest) -> BulkUploadResponse:
         batch_id,
     )
 
-    print(documents)
+    print("documents total count:",len(documents))
     # split documents into chunks
-    chunks = create_chunks(documents)
-    print("chunks:", chunks)
+    # chunks = create_chunks(documents)
+    chunks = create_chunks_by_ai(documents)
+    print("created chunks:",chunks)
 
     # create vector DB 
     # ex1. /vector_db/tony/AMD

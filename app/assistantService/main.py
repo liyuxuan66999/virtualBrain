@@ -1,5 +1,6 @@
 from datetime import datetime, UTC
 from uuid import uuid4
+from litellm import completion
 
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -15,6 +16,7 @@ from constants import constants
 
 from models import ChatRequest, ChatResponse
 from utils.commonUtils import combined_question, fetch_context
+from utils.queryUtils import make_rag_messages
 
 app = FastAPI()
 load_dotenv(override=True)
@@ -34,9 +36,6 @@ async def chat(payload: ChatRequest) -> ChatResponse:
     history = dummy_conversations.setdefault(conversation_id, [])
     dummy_user_message_id = str(uuid4())
     dummy_assistant_message_id = str(uuid4())
-    history.append({"id": dummy_user_message_id, "role": "user", "content": question})
-    history.append({"id": dummy_assistant_message_id, "role": "assistant", "content": answer})
-       
     
     # combined = combined_question(question, history)
 
@@ -57,19 +56,19 @@ async def chat(payload: ChatRequest) -> ChatResponse:
         history,
         collection
     )
-    dummy_answer = (
-        "\n\n".join(chunk.page_content for chunk in chunks)
-        if chunks
-        else "No relevant context found."
-    )
+
     # next step complete rag AI call
-    # messages = make_rag_messages(question, history, chunks)
-    # response = completion(model=MODEL, messages=messages)
-    
+    messages = make_rag_messages(question, history, chunks)
+    print("rag message:",messages)
+    response = completion(model=constants.AI_MODEL, messages=messages)
+
+    history.append({"id": dummy_user_message_id, "role": "user", "content": question})
+    history.append({"id": dummy_assistant_message_id, "role": "assistant", "content": response.choices[0].message.content})
+            
 
     return ChatResponse(
         conversationId=conversation_id,
         userMessageId=dummy_user_message_id,
         assistantMessageId=dummy_assistant_message_id,
-        answer=dummy_answer,
+        answer=response.choices[0].message.content,
     )

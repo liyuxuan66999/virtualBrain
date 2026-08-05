@@ -3,6 +3,7 @@ import os
 import re
 from uuid import uuid4
 
+
 from fastapi import HTTPException
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
 from langchain_core.documents import Document
@@ -93,7 +94,7 @@ def create_chunks(
         print("current chunk_id:", f"{document_id}_chunk_{chunk_index}")
         chunk.metadata["chunk_id"] = f"{document_id}_chunk_{chunk_index}"
 
-    return chunks
+    return chunks    
 
 def create_embeddings(
         chunks,
