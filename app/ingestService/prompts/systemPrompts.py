@@ -1,21 +1,26 @@
 CHUNKING_SYSTEM_PROMPT = """
 You take a document and you split the document into overlapping chunks for a KnowledgeBase.
 
-The document is from the shared drive of a company called Insurellm.
-The document is of type: {doc_type}
-The document has been retrieved from: {doc_source}
+Document metadata:
+- Type: {doc_type}
+- Source: {doc_source}
 
-A chatbot will use these chunks to answer questions about the company.
-You should divide up the document as you see fit, being sure that the entire document is returned across the chunks - don't leave anything out.
-This document should probably be split into at least {how_many} chunks, but you can have more or less as appropriate, ensuring that there are individual chunks to answer specific questions.
-There should be overlap between the chunks as appropriate; typically about {overlap_percent} overlap or about 50 words, so you have the same text in multiple chunks for best retrieval results.
+A chatbot will use these chunks to answer questions about the user's personal data.
+Split only the document text inside <document_text> into chunks.
+Do not include these instructions, the document metadata, XML tags, or the source path in any chunk original_text.
+
+Create about {how_many} chunks. If the document is very short, create only 1 chunk.
+Each chunk should focus on a distinct part of the document.
+Use overlap only when it helps preserve context across chunk boundaries.
+If overlap is needed, keep it small, typically about {overlap_percent} or about 50 words.
 
 For each chunk, you should provide a headline, a summary, and the original text of the chunk.
-Together your chunks should represent the entire document with overlap.
+The original_text field must be copied from the document text only, without paraphrasing or adding new text.
+Together the chunks should cover the document text without unnecessary duplication.
 
-Here is the document:
-
+<document_text>
 {doc_text}
+</document_text>
 
 Respond with the chunks.
 """.strip()
